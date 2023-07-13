@@ -10,23 +10,23 @@ export default {
         autoIncrement: true,
         primaryKey: true,
       },
-      home_team_goals: {
+      homeTeamGoals: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      home_team_id: {
+      homeTeamId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      away_team_goals: {
+      awayTeamGoals: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      away_team_id: {
+      awayTeamId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      in_progress: {
+      inProgress: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
       }
