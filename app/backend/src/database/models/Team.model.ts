@@ -6,7 +6,6 @@ import {
   CreationOptional,
 } from 'sequelize';
 import db from '.';
-// import OtherModel from './OtherModel';
 
 export default class Team extends Model<InferAttributes<Team>,
 InferCreationAttributes<Team>> {
