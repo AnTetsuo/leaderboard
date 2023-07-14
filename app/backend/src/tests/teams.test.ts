@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 import * as mock from './mocks/teams.mock'
 import { app } from '../app';
-
+import TeamModel from '../database/models/useModels/teamsModel';
 
 chai.use(chaiHttp);
 
@@ -15,7 +15,7 @@ describe('Fluxo TEAMS ', () => {
 
   it('00- GET @ "/" => returns the team list', async () => {
     //ARRANGE
-    sinon.stub(teamsModel, 'listAll').resolves(mock.list);
+    sinon.stub(TeamModel.prototype, 'listAll').resolves(mock.list);
     //ACT
     const response = await chai.request(app).get('/teams')
     //ASSERT
