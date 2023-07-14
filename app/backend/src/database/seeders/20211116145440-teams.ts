@@ -6,52 +6,52 @@ export default {
       'teams',
       [
         {
-          teamName: 'Avaí/Kindermann',
+          team_name: 'Avaí/Kindermann',
         },
         {
-          teamName: 'Bahia',
+          team_name: 'Bahia',
         },
         {
-          teamName: 'Botafogo',
+          team_name: 'Botafogo',
         },
         {
-          teamName: 'Corinthians',
+          team_name: 'Corinthians',
         },
         {
-          teamName: 'Cruzeiro',
+          team_name: 'Cruzeiro',
         },
         {
-          teamName: 'Ferroviária',
+          team_name: 'Ferroviária',
         },
         {
-          teamName: 'Flamengo',
+          team_name: 'Flamengo',
         },
         {
-          teamName: 'Grêmio',
+          team_name: 'Grêmio',
         },
         {
-          teamName: 'Internacional',
+          team_name: 'Internacional',
         },
         {
-          teamName: 'Minas Brasília',
+          team_name: 'Minas Brasília',
         },
         {
-          teamName: 'Napoli-SC',
+          team_name: 'Napoli-SC',
         },
         {
-          teamName: 'Palmeiras',
+          team_name: 'Palmeiras',
         },
         {
-          teamName: 'Real Brasília',
+          team_name: 'Real Brasília',
         },
         {
-          teamName: 'Santos',
+          team_name: 'Santos',
         },
         {
-          teamName: 'São José-SP',
+          team_name: 'São José-SP',
         },
         {
-          teamName: 'São Paulo',
+          team_name: 'São Paulo',
         },
       ],
       {},
