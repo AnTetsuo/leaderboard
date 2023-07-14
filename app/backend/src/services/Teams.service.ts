@@ -12,4 +12,11 @@ export default class TeamService implements IService<ITeam> {
     const dbData = await this.dbTeams.listAll();
     return { status: 'OK', data: dbData };
   }
+
+  public async findById(id: number): Promise<ServRes<ITeam>> {
+    const dbData = await this.dbTeams.findById(id);
+    if (!dbData) return { status: 'NOT_FOUND', data: { message: 'Team not found' } };
+
+    return { status: 'OK', data: dbData };
+  }
 }

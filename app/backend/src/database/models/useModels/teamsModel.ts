@@ -9,4 +9,9 @@ export default class TeamModel implements IModel<Omit<ITeam, 'id'>> {
     const teamList = await this.db.findAll();
     return teamList;
   }
+
+  public async findById(id: number): Promise<ITeam | null> {
+    const team = await this.db.findByPk(id);
+    return team;
+  }
 }
