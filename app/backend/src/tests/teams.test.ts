@@ -57,8 +57,8 @@ describe('Fluxo TEAMS ', () => {
 
       const response = await chai.request(app).get('/teams/1');
 
-      expect(response.status).to.eq(200);
-      expect(response.body).to.be.deep.equal(sww);
+      expect(response.status).to.eq(500);
+      expect(response.body).to.be.deep.equal({ message: sww });
     });
   })
 
