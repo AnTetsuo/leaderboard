@@ -14,8 +14,6 @@ export default class LoginService {
   ) { }
 
   public async login(payload: login): Promise<ServRes<{ token: string }>> {
-    console.log(payload.email);
-    console.log(payload.password);
     const errMessage = 'Invalid email or password';
 
     if (!this.validations.emailTest(payload.email)
@@ -31,5 +29,10 @@ export default class LoginService {
 
     const token = this.webToken.sign({ id: user.id, email: user.email });
     return { status: 'OK', data: { token } };
+  }
+
+  public async getRole(id: number): Promise<ServRes<{ role: string | 'not found' }>> {
+    const user = await this.db.userByPk(id);
+    return { status: 'OK', data: { role: user?.role || 'not found' } };
   }
 }

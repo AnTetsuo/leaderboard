@@ -22,4 +22,15 @@ export default class LoginController {
       return res.status(getErr('500')).json({ message: this.sww });
     }
   }
+
+  public async getRole(req: Request, res: Response) {
+    try {
+      const { userId } = req.body;
+      const { data } = await this.service.getRole(userId);
+
+      res.status(200).json(data);
+    } catch (error) {
+      return res.status(getErr('500')).json({ message: this.sww });
+    }
+  }
 }

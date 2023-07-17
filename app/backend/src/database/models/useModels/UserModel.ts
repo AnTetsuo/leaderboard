@@ -10,4 +10,10 @@ export default class UserModel {
     const user = await this.db.findOne({ where: { email } });
     return user;
   }
+
+  public async userByPk(id: number): Promise<IUser | null> {
+    const user = await this.db.findByPk(id);
+
+    return user;
+  }
 }
