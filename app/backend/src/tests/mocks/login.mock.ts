@@ -12,3 +12,14 @@ export const payload = {
   email: 'abcdefgh@hgfedcba.com',
   password: 'yeetee',
 }
+
+export const invEmail = {
+  email: '@invalid.com',
+  password: '123456',
+}
+
+export const invPassword = {
+  email: 'valid@email.com',
+  password: '12345',
+}
+

@@ -21,11 +21,12 @@ describe('Fluxo LOGIN ', () => {
     it('00- SUCCESS => returns the token', async function() {
       sinon.stub(UserModel.prototype, 'queryEmail').resolves(mock.user);
       sinon.stub(bc, 'compareSync').returns(true);
-      
+      sinon.stub(jwt, 'sign').returns(mock.token);
+
       const response = await chai.request(app).post('/login').send(mock.payload);
 
       expect(response.status).to.be.eq(200);
-      expect(response.body).to.have.property('token', 'token')
+      expect(response.body).to.deep.eq({ token: mock.token })
     });
 
     it('01- FAILURE => missing email on req, returns status 400 and "all fields" message', async function () {
@@ -49,7 +50,7 @@ describe('Fluxo LOGIN ', () => {
       const response = await chai.request(app).post('/login').send(mock.payload);
 
       expect(response.status).to.be.eq(401);
-      expect(response.body).to.have.property('message', 'Email or Password incorrect');
+      expect(response.body).to.have.property('message', 'Invalid email or password');
     });
 
     it('04- FAILURE => if the emailQuery doesn"t found a user', async function () {
@@ -57,11 +58,25 @@ describe('Fluxo LOGIN ', () => {
 
       const response = await chai.request(app).post('/login').send(mock.payload);
 
-      expect(response.status).to.be.eq(404);
-      expect(response.body).to.have.property('message', 'User not found');
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Invalid email or password');
     })
 
-    it('05- THROWS => on db error returns status 500 and sww message', async function () {
+    it('05- FAILURE => if the email is not valid', async function () {
+      const response = await chai.request(app).post('/login').send(mock.invEmail);
+
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Invalid email or password');
+    })
+
+    it('06- FAILURE => if the password is not valid', async function () {
+      const response = await chai.request(app).post('/login').send(mock.invPassword);
+
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Invalid email or password');
+    })
+
+    it('07- THROWS => on db error returns status 500 and sww message', async function () {
       sinon.stub(UserModel.prototype, 'queryEmail').throws();
 
       const response = await chai.request(app).post('/login').send(mock.payload);
