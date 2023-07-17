@@ -85,4 +85,75 @@ describe('Fluxo LOGIN ', () => {
       expect(response.body).to.have.property('message', 'Something went wrong');
     })
   })
+
+  describe('GET /roles', function () {
+    it('00- On SUCCESS => returns the role of the user', async function() {
+      sinon.stub(UserModel.prototype, 'userByPk').resolves(mock.user);
+      sinon.stub(jwt, 'verify').returns(mock.user);
+
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('authorization', mock.authHeader);
+
+      expect(response.status).to.be.eq(200);
+      expect(response.body).to.deep.eq({ role: mock.user.role });
+    })
+
+    it('01- On FAILURE => if the token isn"t sent on the header', async function() {
+      const response = await chai.request(app)
+        .get('/login/role')
+
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Token not found');
+    })
+
+    it('02- FAILURE => if the token doesn"t abide to the Bearer format', async function() {
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('authorization', mock.token);
+
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Token must be a valid token');
+    })
+
+    it('03- FAILURE => if the token fails to be valid', async function() {
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('authorization','Bearer '+ mock.user.email);
+
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Token must be a valid token');
+    })
+
+    it('04- FAILURE => if the token fails to be valid', async function() {
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('authorization','Bearer '+ mock.user.email);
+
+      expect(response.status).to.be.eq(401);
+      expect(response.body).to.have.property('message', 'Token must be a valid token');
+    })
+
+    it('05- FAILURE => if the userId is not found on the db (NEVER case)', async function() {
+      sinon.stub(UserModel.prototype, 'userByPk').resolves(null);
+
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('authorization', mock.authHeader);
+
+      expect(response.status).to.be.eq(200);
+      expect(response.body).to.have.property('role', 'not found');
+    })
+
+    it('06- THROWS => if the db throws, controller should set status 500, and message', async function () {
+      sinon.stub(UserModel.prototype, 'userByPk').throws();
+
+      const response = await chai.request(app)
+      .get('/login/role')
+      .set('authorization', mock.authHeader);
+
+      expect(response.status).to.be.eq(500);
+      expect(response.body).to.have.property('message', sww);
+    })
+  })
 })

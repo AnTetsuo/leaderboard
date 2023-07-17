@@ -1,4 +1,6 @@
-export const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2RodXciLCJpYXQiOjE2ODkzODY4MjN9.dRbrH5ZSBNuI-n--UC6vnaE7IDMdy8dG8s3rQLSYciE'
+export const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2RodXciLCJpYXQiOjE2ODk2MjI1MDB9.3M2QFwumqtt0FyMRWAbjL-PZTlQzi-bdx6whYzjeraI'
+
+export const authHeader = 'Bearer ' + token;
 
 export const user = {
   id: 1,
