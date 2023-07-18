@@ -7,12 +7,19 @@ export default class MatchesController {
     private service = new MatchesService(),
   ) { }
 
-  public async listAll(_req: Request, res: Response) {
+  public async listAll(
+    req: Request,
+    res: Response,
+  ) {
+    const { inProgress } = req.query;
+    const query = typeof inProgress !== 'string' ? undefined : this.toBool(inProgress);
     try {
-      const response = await this.service.listAll();
+      const response = await this.service.listAll(query);
       res.status(200).json(response.data);
     } catch (e) {
       res.status(500).json({ message: this.errMessage });
     }
   }
+
+  private toBool = (boolString: string | undefined) => (boolString === 'true' ? 1 : 0);
 }

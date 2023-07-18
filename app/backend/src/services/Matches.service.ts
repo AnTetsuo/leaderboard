@@ -7,8 +7,9 @@ export default class TeamService {
     private db = new MatchesModel(),
   ) { }
 
-  public async listAll(): Promise<ServRes<IMatch[]>> {
-    const dbData = await this.db.getAll();
+  public async listAll(progress?: number | undefined): Promise<ServRes<IMatch[]>> {
+    const inProgress = progress === undefined ? undefined : Boolean(progress);
+    const dbData = await this.db.getAll(inProgress);
     return { status: 'OK', data: dbData };
   }
 }
