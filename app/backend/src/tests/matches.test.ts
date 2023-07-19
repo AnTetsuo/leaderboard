@@ -7,6 +7,7 @@ import * as authMock from './mocks/login.mock';
 import jwt from '../utils/jwt';
 import { app } from '../app';
 import MatchesModel from '../database/models/useModels/MatchesModel';
+import TeamModel from '../database/models/useModels/teamsModel';
 
 chai.use(chaiHttp);
 
@@ -119,6 +120,78 @@ describe('Fluxo MATCHES ', () => {
 
       expect(response.status).to.be.eq(500);
       expect(response.body).to.deep.equal({ message: sww });
+      })
     })
-})
+
+    describe('POST /', function() {
+      it('00- SUCCESS => returns the created match', async function () {
+        sinon.stub(MatchesModel.prototype, 'createMatch').resolves(mock.createMatch);
+        sinon.stub(jwt, 'verify').returns(authMock.user);
+  
+        const response = await chai.request(app)
+          .post('/matches')
+          .set('authorization', authMock.authHeader)
+          .send({
+            homeTeamId: 2,
+            homeTeamGoals: 1,
+            awayTeamId: 1,
+            awayTeamGoals: 2,
+          });
+        
+        expect(response.status).to.be.eq(201);
+        expect(response.body).to.be.deep.eq(mock.createMatch);
+      })
+
+      it('01- FAILURE => should return 422 if homeTeamId is the same as awayTeamId', async function () {
+        sinon.stub(MatchesModel.prototype, 'createMatch').throws();
+  
+        const response = await chai.request(app)
+        .post('/matches')
+        .set('authorization', authMock.authHeader)
+        .send({
+          homeTeamId: 1,
+          homeTeamGoals: 1,
+          awayTeamId: 1,
+          awayTeamGoals: 2,
+        });;
+  
+        expect(response.status).to.be.eq(422);
+        expect(response.body).to.deep.equal({ message: 'It is not possible to create a match with two equal teams' });
+      })
+
+      it('02- FAILURE => should return 404 if any teamId returns null from db', async function () {
+        sinon.stub(MatchesModel.prototype, 'createMatch').throws();
+        sinon.stub(TeamModel.prototype, 'findById').resolves(null);
+  
+        const response = await chai.request(app)
+        .post('/matches')
+        .set('authorization', authMock.authHeader)
+        .send({
+          homeTeamId: 1,
+          homeTeamGoals: 1,
+          awayTeamId: 3,
+          awayTeamGoals: 2,
+        });;
+  
+        expect(response.status).to.be.eq(404);
+        expect(response.body).to.deep.equal({ message: 'There is no team with such id!' });
+      })
+  
+      it('03- THROWS => returns the status 500 if db fails', async function () {
+        sinon.stub(MatchesModel.prototype, 'createMatch').throws();
+  
+        const response = await chai.request(app)
+        .post('/matches')
+        .set('authorization', authMock.authHeader)
+        .send({
+          homeTeamId: 2,
+          homeTeamGoals: 1,
+          awayTeamId: 1,
+          awayTeamGoals: 2,
+        });;
+  
+        expect(response.status).to.be.eq(500);
+        expect(response.body).to.deep.equal({ message: sww });
+      })
+    });
 });

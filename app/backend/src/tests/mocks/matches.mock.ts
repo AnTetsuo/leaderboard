@@ -132,3 +132,12 @@ export const notInProgress = [
     }
   },
 ]
+
+export const createMatch = {
+  "id": 1,
+  "homeTeamId": 16,
+  "homeTeamGoals": 2,
+  "awayTeamId": 8,
+  "awayTeamGoals": 2,
+  "inProgress": true,
+}
