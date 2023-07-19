@@ -1,3 +1,4 @@
+import { postMatch } from '../../../types/bodyTypes';
 import IMatch from '../../../Interfaces/IMatch';
 import Match from '../Match.model';
 import Team from '../Team.model';
@@ -34,5 +35,11 @@ export default class MatchesModel {
   ): Promise<number> {
     const [affectedCount] = await this.db.update({ ...newScore }, { where: { id } });
     return affectedCount;
+  }
+
+  public async createMatch(payload: postMatch): Promise<IMatch> {
+    const newMatch = await this.db.create({ ...payload, inProgress: true });
+
+    return newMatch;
   }
 }

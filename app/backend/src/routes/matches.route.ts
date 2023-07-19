@@ -19,4 +19,10 @@ matchesRoute.patch(
   (req, res) => mc.updateMatch(req, res),
 );
 
+matchesRoute.post(
+  '/',
+  validateToken,
+  (req, res) => mc.postMatch(req, res),
+);
+
 export default matchesRoute;

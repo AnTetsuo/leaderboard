@@ -1,4 +1,4 @@
-type errType = 'INVALID_DATA' | 'NOT_FOUND';
+type errType = 'INVALID_DATA' | 'NOT_FOUND' | 'UNPROCESSABLE_ENTITY';
 
 export type errServ = {
   status: errType;
