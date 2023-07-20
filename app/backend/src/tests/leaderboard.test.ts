@@ -43,4 +43,23 @@ describe('Fluxo LEADERBOARD ', () => {
       expect(response.body).to.be.deep.equal({ message: sww });
     })
   })
+    describe('GET /leaderboard', function () {
+      it('00- SUCCESS => returns the leaderboard ranking on Home Games', async function() {
+        sinon.stub(MatchesModel.prototype, 'getAll').resolves(mock.matches);
+  
+        const response = await chai.request(app).get('/leaderboard');
+  
+        expect(response.status).to.eq(200);
+        expect(response.body).to.be.deep.equal(mock.leaderboard);
+      });
+
+      it('02- THROWS => on db error returns status 500 and sww message', async function () {
+        sinon.stub(MatchesModel.prototype, 'getAll').throws();
+  
+        const response = await chai.request(app).get('/leaderboard')
+  
+        expect(response.status).to.eq(500);
+        expect(response.body).to.be.deep.equal({ message: sww });
+      })
+  })
 });

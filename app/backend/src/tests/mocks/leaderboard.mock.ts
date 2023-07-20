@@ -164,7 +164,6 @@ export const boardAway = [
   },
 ]
 
-
 export const boardHome = [
     {
       "name": "Grêmio",
@@ -214,4 +213,55 @@ export const boardHome = [
       "goalsBalance": 0,
       "efficiency": 33.33
     },
+]
+
+export const leaderboard = [
+  {
+    "name": "Grêmio",
+    "totalPoints": 8,
+    "totalGames": 4,
+    "totalVictories": 2,
+    "totalDraws": 2,
+    "totalLosses": 0,
+    "goalsFavor": 6,
+    "goalsOwn": 2,
+    "goalsBalance": 4,
+    "efficiency": 66.67
+  },
+  {
+    "name": "Navi",
+    "totalPoints": 8,
+    "totalGames": 4,
+    "totalVictories": 2,
+    "totalDraws": 2,
+    "totalLosses": 0,
+    "goalsFavor": 6,
+    "goalsOwn": 2,
+    "goalsBalance": 4,
+    "efficiency": 66.67
+  },
+  {
+    "name": "São Paulo",
+    "totalPoints": 2,
+    "totalGames": 4,
+    "totalVictories": 0,
+    "totalDraws": 2,
+    "totalLosses": 2,
+    "goalsFavor": 2,
+    "goalsOwn": 6,
+    "goalsBalance": -4,
+    "efficiency": 16.67
+  },
+  {
+    "name": "C9",
+    "totalPoints": 2,
+    "totalGames": 4,
+    "totalVictories": 0,
+    "totalDraws": 2,
+    "totalLosses": 2,
+    "goalsFavor": 2,
+    "goalsOwn": 6,
+    "goalsBalance": -4,
+    "efficiency": 16.67
+  },
 ]
