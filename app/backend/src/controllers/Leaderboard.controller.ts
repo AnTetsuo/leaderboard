@@ -15,4 +15,13 @@ export default class LeaderboardController {
       res.status(500).json({ message: 'Something went wrong' });
     }
   }
+
+  public async getLeaderboard(req: Request, res: Response) {
+    try {
+      const { data } = await this.service.leaderboard();
+      res.status(200).json(data);
+    } catch (e) {
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  }
 }

@@ -22,6 +22,17 @@ export default class LeaderboardService {
     };
   }
 
+  public async leaderboard() {
+    const homeBoard = (await this.homeLeaderboard(true)).data;
+    const awayBoard = (await this.homeLeaderboard(false)).data;
+    const teams = homeBoard.map((team) => {
+      const away = awayBoard.find((awayTeam) => awayTeam.name === team.name) as leaderboard;
+      return LeaderboardService.squashBoard(team, away);
+    });
+    LeaderboardService.sortBoard(teams);
+    return { status: 'OK', data: teams };
+  }
+
   public async homeLeaderboard(home: boolean) {
     const board = [];
     const allMatches = await this.db.getAll(false);
@@ -65,6 +76,21 @@ export default class LeaderboardService {
 
     this.resetState();
     return score;
+  }
+
+  private static squashBoard(home: leaderboard, away: leaderboard) {
+    const temp = {} as leaderboard;
+    temp.name = home.name;
+    temp.totalPoints = home.totalPoints + away.totalPoints;
+    temp.totalGames = home.totalGames + away.totalGames;
+    temp.totalVictories = home.totalVictories + away.totalVictories;
+    temp.totalDraws = home.totalDraws + away.totalDraws;
+    temp.totalLosses = home.totalLosses + away.totalLosses;
+    temp.goalsFavor = home.goalsFavor + away.goalsFavor;
+    temp.goalsOwn = home.goalsOwn + away.goalsOwn;
+    temp.goalsBalance = temp.goalsFavor - temp.goalsOwn;
+    temp.efficiency = Number(((temp.totalPoints / (temp.totalGames * 3)) * 100).toFixed(2));
+    return temp;
   }
 
   private static sortBoard(scoreboard: leaderboard[]) {

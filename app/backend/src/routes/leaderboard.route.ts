@@ -8,4 +8,6 @@ leaderboardRoute.get('/home', (req, res) => lbc.getHomeLeaderboard(req, res));
 
 leaderboardRoute.get('/away', (req, res) => lbc.getHomeLeaderboard(req, res));
 
+leaderboardRoute.get('/', (req, res) => lbc.getLeaderboard(req, res));
+
 export default leaderboardRoute;
