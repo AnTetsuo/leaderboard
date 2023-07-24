@@ -9,7 +9,7 @@ export default class LeaderboardController {
   public async getHomeLeaderboard(req: Request, res: Response) {
     const config = req.path.includes('home');
     try {
-      const { data } = await this.service.homeLeaderboard(config);
+      const { data } = await this.service.leaderboard(config);
       res.status(200).json(data);
     } catch (e) {
       res.status(500).json({ message: 'Something went wrong' });

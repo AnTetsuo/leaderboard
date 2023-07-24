@@ -1,7 +1,7 @@
 import IMatchWithTeams from '../Interfaces/IMatchWithTeams';
 import { leaderboard } from '../types/responseTypes';
 import MatchesModel from '../database/models/useModels/MatchesModel';
-import IMatch from '../Interfaces/IMatch';
+import { ServRes } from '../Interfaces/services/IResponse';
 
 export default class LeaderboardService {
   private initial;
@@ -22,89 +22,69 @@ export default class LeaderboardService {
     };
   }
 
-  public async leaderboard() {
-    const homeBoard = (await this.homeLeaderboard(true)).data;
-    const awayBoard = (await this.homeLeaderboard(false)).data;
-    const teams = homeBoard.map((team) => {
-      const away = awayBoard.find((awayTeam) => awayTeam.name === team.name) as leaderboard;
-      return LeaderboardService.squashBoard(team, away);
-    });
-    LeaderboardService.sortBoard(teams);
-    return { status: 'OK', data: teams };
-  }
-
-  public async homeLeaderboard(home: boolean) {
+  public async leaderboard(home?: boolean): Promise<ServRes<leaderboard[]>> {
     const board = [];
-    const allMatches = await this.db.getAll(false);
-    const aggMatches = LeaderboardService.matchesCollection(allMatches, home);
-    const it = aggMatches.keys();
-    for (let i = 1; i <= aggMatches.size; i += 1) {
-      board.push(this.scoreTeam(aggMatches.get(it.next().value), home));
+    const allMatches = await this.db.getAll(false) as IMatchWithTeams[];
+    const aggTeamMatches = typeof home === 'boolean'
+      ? LeaderboardService.aggByTeam(allMatches, home)
+      : LeaderboardService.aggByTeam(allMatches);
+    const it = aggTeamMatches.keys();
+    const itTeams = aggTeamMatches.values();
+    for (let i = 0; i < aggTeamMatches.size; i += 1) {
+      board.push(this.calcScore(itTeams.next().value, it.next().value));
     }
     LeaderboardService.sortBoard(board);
     return { status: 'OK', data: board };
   }
 
-  private static matchesCollection(list: IMatch[], home: boolean) {
-    const dups = home ? list.map(({ homeTeamId }) => homeTeamId)
-      : list.map(({ awayTeamId }) => awayTeamId);
-    const teams = [...new Set <number>(dups)];
-    const teamToMatches = new Map();
-    teams.forEach((team) => teamToMatches.set(team, []));
-    list.forEach((match) => teamToMatches
-      .get(home ? match.homeTeamId : match.awayTeamId).push(match));
-    return teamToMatches;
+  private static aggByTeam(matches: IMatchWithTeams[], home?: boolean): Map<string, leaderboard[]> {
+    const duplicates = [
+      ...(matches.map((match) => match.homeTeam.teamName)),
+      ...(matches.map((match) => match.awayTeam.teamName)),
+    ];
+    const teams = [...new Set<string>(duplicates)];
+    const teamMatches = new Map();
+    teams.forEach((team) => teamMatches.set(team, []));
+    matches.forEach((match) => {
+      const { homeTeam, awayTeam } = match;
+      if (typeof home === 'boolean') {
+        teamMatches.get(home ? homeTeam.teamName : awayTeam.teamName).push(match);
+      } else {
+        teamMatches.get(homeTeam.teamName).push(match);
+        teamMatches.get(awayTeam.teamName).push(match);
+      }
+    });
+    return teamMatches;
   }
 
-  private scoreTeam(matches: IMatchWithTeams[], home: boolean) {
+  private calcScore(matches:IMatchWithTeams[], team: string): leaderboard {
     const score = matches.reduce((acc, curr) => {
-      const { homeTeamGoals, awayTeamGoals } = curr;
-      const teams = [curr.homeTeam.teamName, curr.awayTeam.teamName];
-      const goals = [curr.homeTeamGoals, curr.awayTeamGoals];
-      acc.name = home ? teams[0] : teams[1];
-      acc.goalsFavor += home ? goals[0] : goals[1];
-      acc.goalsOwn += home ? awayTeamGoals : homeTeamGoals;
-      acc.totalVictories += LeaderboardService.avalResult(homeTeamGoals, awayTeamGoals, home, true);
-      acc.totalDraws += homeTeamGoals - awayTeamGoals === 0 ? 1 : 0;
-      acc.totalLosses += LeaderboardService.avalResult(homeTeamGoals, awayTeamGoals, home, false);
-      acc.totalPoints = acc.totalVictories * 3 + acc.totalDraws;
+      const teamScoring = curr.homeTeam.teamName === team;
+      acc.name = team;
+      acc.goalsFavor += teamScoring ? curr.homeTeamGoals : curr.awayTeamGoals;
+      acc.goalsOwn += teamScoring ? curr.awayTeamGoals : curr.homeTeamGoals;
+      acc.totalDraws += curr.homeTeamGoals === curr.awayTeamGoals ? 1 : 0;
+      acc.totalVictories += LeaderboardService
+        .avalResult(curr.homeTeamGoals, curr.awayTeamGoals, teamScoring, true);
+      acc.totalLosses += LeaderboardService
+        .avalResult(curr.homeTeamGoals, curr.awayTeamGoals, teamScoring, false);
       acc.totalGames += 1;
       return acc;
     }, this.initial);
+
+    score.totalPoints = score.totalVictories * 3 + score.totalDraws;
     score.goalsBalance = score.goalsFavor - score.goalsOwn;
     score.efficiency = Number(((score.totalPoints / (score.totalGames * 3)) * 100).toFixed(2));
-
     this.resetState();
     return score;
   }
 
-  private static squashBoard(home: leaderboard, away: leaderboard) {
-    const temp = {} as leaderboard;
-    temp.name = home.name;
-    temp.totalPoints = home.totalPoints + away.totalPoints;
-    temp.totalGames = home.totalGames + away.totalGames;
-    temp.totalVictories = home.totalVictories + away.totalVictories;
-    temp.totalDraws = home.totalDraws + away.totalDraws;
-    temp.totalLosses = home.totalLosses + away.totalLosses;
-    temp.goalsFavor = home.goalsFavor + away.goalsFavor;
-    temp.goalsOwn = home.goalsOwn + away.goalsOwn;
-    temp.goalsBalance = temp.goalsFavor - temp.goalsOwn;
-    temp.efficiency = Number(((temp.totalPoints / (temp.totalGames * 3)) * 100).toFixed(2));
-    return temp;
-  }
-
-  private static sortBoard(scoreboard: leaderboard[]) {
-    scoreboard.sort((a, b) => {
-      if (a.totalPoints > b.totalPoints) return -1;
-      if (b.totalPoints > a.totalPoints) return 1;
-      if (a.totalVictories > b.totalVictories) return -1;
-      if (b.totalVictories > a.totalVictories) return 1;
-      if (a.goalsBalance > b.goalsBalance) return -1;
-      if (b.goalsBalance > a.goalsBalance) return 1;
-      if (a.goalsFavor > b.goalsFavor) return -1;
-      if (b.goalsFavor > a.goalsFavor) return 1;
-      return 0;
-    });
+  private static sortBoard(scoreboard: leaderboard[]): void {
+    scoreboard.sort((a, b) =>
+      (b.totalPoints - a.totalPoints)
+      || (b.totalVictories - a.totalVictories)
+      || (b.goalsBalance - a.goalsBalance)
+      || (b.goalsFavor - a.goalsFavor));
   }
 
   private static avalResult(
