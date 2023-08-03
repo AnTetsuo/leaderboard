@@ -10,8 +10,9 @@
 <p>
 Utilizando uma arquitetura em camadas (Model, Service e Controller) a aplicação pode listar, 
 cadastrar e finalizar partidas de futebol entre times presentes no banco de dados, 
-e é responsável por processar as partidas e entregar a tabela classificatória dos times para o aplicação
+e é responsável por processar as partidas e entregar a tabela classificatória dos times para que a aplicação
 do front consuma e renderize essas informações.
+
 </p>
 
 
@@ -504,7 +505,5 @@ apenas partidas jogadas como visitante
 
 ###
 
-<p align="center">
-<font size=2>
-Importante! Os arquivos de minha autoria estão no diretório  <code>app/backend</code>
-</p>
+
+###### Importante! Os arquivos de minha autoria estão no diretório `app/backend`
